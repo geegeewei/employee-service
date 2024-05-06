@@ -1,0 +1,25 @@
+version: "3.7"
+services:
+  employee:
+    image: rosewei/employee-service:1.0
+    ports:
+      - "8080"
+#  department:
+#    image: piomin/department-service:94492e7-dirty
+#    ports:
+#      - "8080"
+#    links:
+#      - employee
+#      - jaeger
+#    environment:
+#      - QUARKUS_OPENTELEMETRY_TRACER_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317/
+#  organization:
+#    image: piomin/organization-service:94492e7-dirty
+#    ports:
+#      - "8080"
+#    links:
+#      - employee
+#      - department
+#      - jaeger
+#    environment:
+#      - QUARKUS_OPENTELEMETRY_TRACER_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317/
