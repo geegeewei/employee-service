@@ -1,14 +1,14 @@
-FROM registry.access.redhat.com/quarkus/mandrel-23-rhel8:latest AS build
-COPY --chown=quarkus:quarkus target/native-sources /code/target/native-sources
-USER quarkus
-WORKDIR /code/target/native-sources
-RUN native-image \$(cat ./native-image.args)
-FROM registry.access.redhat.com/ubi9/ubi-minimal:latest
-WORKDIR /work/
-RUN chown 1001 /work \
-&& chmod "g+rwX" /work \
-&& chown 1001:root /work
-COPY --from=build --chown=1001:root /code/target/native-sources/*-runner /work/application
-EXPOSE 8080
-USER 1001
-ENTRYPOINT ["./application", "-Dquarkus.http.host=0.0.0.0"]
+# 使用 OpenJDK 17 作為基礎映像檔
+FROM openjdk:17
+
+# 設定工作目錄
+WORKDIR /app
+
+# 複製 Quarkus 應用程式的編譯過後的輸出 (假設使用 Maven)
+COPY target/quarkus-app/lib/ /app/lib/
+COPY target/quarkus-app/quarkus/ /app/quarkus/
+COPY target/quarkus-app/*.jar /app/
+COPY target/quarkus-app/app/ /app/app/
+
+# 設定 Java 應用程式的入口點
+CMD ["java", "-jar", "/app/quarkus-run.jar"]
