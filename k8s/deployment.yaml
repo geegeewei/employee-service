@@ -1,3 +1,25 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: quota-limit-role
+rules:
+- apiGroups: [""] 
+  resources: ["deployments", "services", "routes"]
+  verbs: ["*"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: quota-limit
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: quota-limit-role
+subjects:
+- kind: ServiceAccount
+  name: openshift-gitops-argocd-application-controller
+  namespace: openshift-gitops
+---  
 apiVersion: apps/v1
 kind: Deployment
 metadata:
