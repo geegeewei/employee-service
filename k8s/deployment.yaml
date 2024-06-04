@@ -13,7 +13,7 @@ spec:
     spec:
       containers:
       - name: employee
-        image: piomin/employee-service
+        image: rosewei/employee-service:1.0
         resources:
           requests:
             memory: "32Mi"
@@ -34,3 +34,20 @@ spec:
     app: employee
   ports:
   - port: 8080
+---
+kind: Route
+apiVersion: route.openshift.io/v1
+metadata:
+  name: employee-service
+  labels:
+    app: employee-service
+    app.kubernetes.io/component: employee-service
+    app.kubernetes.io/instance: employee-service
+spec:
+  to:
+    kind: Service
+    name: employee-service
+  port:
+    targetPort: 8080-tcp
+  tls:
+    termination: edge
