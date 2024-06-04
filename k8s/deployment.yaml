@@ -12,17 +12,13 @@ spec:
         app: employee
     spec:
       containers:
-      - name: employee
-        image: rosewei/employee-service:1.0
-        resources:
-          requests:
-            memory: "32Mi"
-            cpu: "100m"
-          limits:
-            memory: "128Mi"
-            cpu: "500m"
-        ports:
-        - containerPort: 8080
+        - name: employee-service
+          image: 'rosewei/employee-service:1.0'
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+          imagePullPolicy: IfNotPresent
+      restartPolicy: Always
 ---
 apiVersion: v1
 kind: Service
