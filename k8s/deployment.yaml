@@ -16,7 +16,7 @@ spec:
           image: 'rosewei/employee-service:1.0'
           ports:
             - containerPort: 8080
-              protocol: TCP
+ #             protocol: TCP
           imagePullPolicy: IfNotPresent
       restartPolicy: Always
 ---
