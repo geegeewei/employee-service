@@ -1,0 +1,4 @@
+tkn pipeline start tutorial-pipeline \
+    --prefix-name tutorial-pipeline-run \
+    -w name=myworkspace,claimName=nfs-pv-claim \
+    --use-param-defaults

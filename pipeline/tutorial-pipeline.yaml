@@ -48,7 +48,7 @@ spec:
         - code-analysis
       taskRef:
         kind: Task
-        name: buildah.yaml
+        name: buildah
       workspaces:
         - name: source
           workspace: myworkspace
