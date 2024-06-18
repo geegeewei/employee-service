@@ -1,0 +1,56 @@
+apiVersion: tekton.dev/v1
+kind: Pipeline
+metadata:
+  name: tutorial-pipeline
+spec:
+  tasks:
+    - name: fetch-repository
+      params:
+        - name: url
+          value: 'https://github.com/geegeewei/employee-service.git'
+        - name: deleteExisting
+          value: 'true'
+        - name: subdirectory
+          value: ''
+        - name: git-revision
+          value: main
+      taskRef:
+        kind: ClusterTask
+        name: git-clone
+      workspaces:
+        - name: output
+          workspace: myworkspace
+    - name: run-tests
+      runAfter:
+        - fetch-repository
+      taskRef:
+        kind: Task
+        name: unit-test.yaml
+      workspaces:
+        - name: output
+          workspace: myworkspace
+    - name: code-analysis
+      params:
+        - name: sonar-project-key
+          value: employee-service
+      runAfter:
+        - run-tests
+      taskRef:
+        kind: Task
+        name: sonarqube-scan.yaml
+    - name: build
+      params:
+        - name: IMAGE
+          value: docker.io/rosewei/employee-service
+        - name: IMAGE_PUSH_SECRET_NAME
+          value: image-push-secrets
+      runAfter:
+        - code-analysis
+      taskRef:
+        kind: Task
+        name: buildah.yaml
+      workspaces:
+        - name: source
+          workspace: myworkspace
+  workspaces:
+    - name: myworkspace

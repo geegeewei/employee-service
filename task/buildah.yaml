@@ -1,0 +1,61 @@
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: buildah
+spec:
+  params:
+    - description: Reference of the image buildah will produce.
+      name: IMAGE
+      type: string
+    - default: overlay
+      description: Set buildah storage driver
+      name: STORAGE_DRIVER
+      type: string
+    - default: ./Dockerfile
+      description: Path to the Dockerfile to build.
+      name: DOCKERFILE
+      type: string
+    - description: Kubernetes secrets contain image push username and password
+      name: IMAGE_PUSH_SECRET_NAME
+      type: string
+  steps:
+    - computeResources: {}
+      image: 'quay.io/buildah/stable:v1.17.0'
+      name: build
+      script: |
+        buildah --storage-driver=$(params.STORAGE_DRIVER) bud \
+          --no-cache -f $(params.DOCKERFILE) -t $(params.IMAGE) .
+      securityContext:
+        privileged: true
+      volumeMounts:
+        - mountPath: /var/lib/containers
+          name: varlibcontainers
+      workingDir: $(workspaces.source.path)
+    - computeResources: {}
+      env:
+        - name: USERNAME
+          valueFrom:
+            secretKeyRef:
+              key: username
+              name: $(params.IMAGE_PUSH_SECRET_NAME)
+        - name: PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: password
+              name: $(params.IMAGE_PUSH_SECRET_NAME)
+      image: 'quay.io/buildah/stable:v1.17.0'
+      name: push
+      script: |
+        buildah --storage-driver=$(params.STORAGE_DRIVER) push \
+          --creds ${USERNAME}:${PASSWORD} $(params.IMAGE)
+      securityContext:
+        privileged: true
+      volumeMounts:
+        - mountPath: /var/lib/containers
+          name: varlibcontainers
+      workingDir: $(workspaces.source.path)
+  volumes:
+    - emptyDir: {}
+      name: varlibcontainers
+  workspaces:
+    - name: source

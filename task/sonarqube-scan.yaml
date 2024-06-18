@@ -1,0 +1,18 @@
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: sonarqube-scan
+spec:
+  params:
+    - name: sonar-project-key
+      type: string
+  steps:
+    - computeResources: {}
+      image: sonarsource/sonar-scanner-cli
+      name: sonarqube-scan
+      script: |
+        sonar-scanner \
+          -Dsonar.projectKey=$(params.sonar-project-key) \
+          -Dsonar.sources=. \
+          -Dsonar.host.url=http://sonarqube-employee-project.apps.ocp.iisi.idv \
+          -Dsonar.login=80bfbfe1fd6e322de3bffa88529f1a2fc44549f3

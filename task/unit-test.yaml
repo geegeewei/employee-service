@@ -1,0 +1,18 @@
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: unit-test
+  namespace: employee-project
+spec:
+  steps:
+    - computeResources: {}
+      image: 'maven:3-sapmachine-17'
+      name: run-tests
+      script: |
+        echo $(workspaces.output.path)
+        cd $(workspaces.output.path)
+        mvn -version
+        mvn test
+  workspaces:
+    - description: The git repo will be cloned onto the volume backing this Workspace.
+      name: output
