@@ -12,17 +12,13 @@ spec:
         app: employee
     spec:
       containers:
-      - name: employee
-        image: piomin/employee-service
-        resources:
-          requests:
-            memory: "32Mi"
-            cpu: "100m"
-          limits:
-            memory: "128Mi"
-            cpu: "500m"
-        ports:
-        - containerPort: 8080
+        - name: employee-service
+          image: 'rosewei/employee-service:1.0'
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+          imagePullPolicy: IfNotPresent
+      restartPolicy: Always
 ---
 apiVersion: v1
 kind: Service
@@ -34,3 +30,31 @@ spec:
     app: employee
   ports:
   - port: 8080
+---
+kind: Route
+apiVersion: route.openshift.io/v1
+metadata:
+  name: employee-service
+  labels:
+    app: employee-service
+    app.kubernetes.io/component: employee-service
+    app.kubernetes.io/instance: employee-service
+spec:
+  to:
+    kind: Service
+    name: employee-service
+  port:
+    targetPort: 8080-tcp
+  tls:
+    termination: edge
+
+
+
+
+
+
+
+
+
+
+    
