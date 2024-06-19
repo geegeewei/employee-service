@@ -6,13 +6,27 @@ spec:
   params:
     - name: sonar-project-key
       type: string
+    - description: Kubernetes secrets contain image push username and password
+      name: SONARQUBE_SECRET_NAME
+      type: string
   steps:
     - computeResources: {}
+      env:
+        - name: LOGIN
+          valueFrom:
+            secretKeyRef:
+              key: login
+              name: $(params.SONARQUBE_SECRET_NAME)
+        - name: HOSTURL
+          valueFrom:
+            secretKeyRef:
+              key: hosturl
+              name: $(params.SONARQUBE_SECRET_NAME)
       image: sonarsource/sonar-scanner-cli
       name: sonarqube-scan
       script: |
         sonar-scanner \
           -Dsonar.projectKey=$(params.sonar-project-key) \
           -Dsonar.sources=. \
-          -Dsonar.host.url=http://sonarqube-employee-project.apps.ocp.iisi.idv \
-          -Dsonar.login=80bfbfe1fd6e322de3bffa88529f1a2fc44549f3
+          -Dsonar.host.url=${HOSTURL} \
+          -Dsonar.login=${LOGIN}
