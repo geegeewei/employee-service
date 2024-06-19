@@ -25,7 +25,7 @@ spec:
         - fetch-repository
       taskRef:
         kind: Task
-        name: unit-test.yaml
+        name: unit-test
       workspaces:
         - name: output
           workspace: myworkspace
@@ -37,7 +37,7 @@ spec:
         - run-tests
       taskRef:
         kind: Task
-        name: sonarqube-scan.yaml
+        name: sonarqube-scan
     - name: build
       params:
         - name: IMAGE
