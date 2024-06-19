@@ -33,6 +33,8 @@ spec:
       params:
         - name: sonar-project-key
           value: employee-service
+        - name: SONARQUBE_SECRET_NAME
+          value: sonarqube-secrets
       runAfter:
         - run-tests
       taskRef:
